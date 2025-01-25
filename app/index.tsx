@@ -21,6 +21,7 @@ export default function Login() {
                     source={require('@/assets/images/app-icon.svg')}
                     placeholder={"blur hash"}
                     contentFit={'contain'}
+
                 />
             </View>
             <View style={styles.part}>
@@ -65,6 +66,7 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     imageIcon: {
+
         flex: 1,
         width: 128,
     },

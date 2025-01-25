@@ -1,7 +1,102 @@
-import {Text, View} from "react-native";
+import ListPage from "@/components/listPage";
+import React, {useState} from "react";
+import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
+import {Image} from "expo-image";
+import SearchPage from "@/components/searchPage";
 
+export type mode = "lists" | "search"
 export default function MainPage() {
-    return (<View>
-      <Text>MAIN PAGE</Text>
-    </View>)
+    const [mode, setMode] = useState<mode>("lists");
+    const [searchText,setSearchText] = useState<string>("");
+    return (
+        <View style={styles.container}>
+            <View style={styles.content}>
+
+            {mode === "lists" ? <ListPage setMode={setMode} setSearchText={setSearchText}/> : <SearchPage searchText={searchText}/>}
+            </View>
+            <View style={styles.footer}>
+                <TouchableOpacity style={styles.footerBtn} onPress={() => {
+                    setSearchText(" ")
+                    setMode("lists")
+                }}>
+                        <Image
+                            style={styles.footerIcon}
+                            source={require('@/assets/images/home-icon.svg')}
+                            placeholder={"blur hash"}
+                            contentFit={'contain'}
+                            contentPosition={"center"}
+                            tintColor={mode === "lists" ? "#2B2D42" : "white"}
+                        />
+                        <Text style={mode === "lists" ? styles.activeFooterText : styles.nonActiveFooterText}>
+
+                            Home
+                        </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.footerBtn} onPress={() => {
+                    setSearchText("React Native")
+                    setMode("search")
+                }}>
+
+                        <Image
+                            style={styles.footerIcon}
+                            source={require('@/assets/images/search-icon.svg')}
+                            placeholder={"blur hash"}
+                            contentFit={'contain'}
+                            contentPosition={"center"}
+                            tintColor={mode === "search" ? "#2B2D42" : "white"}
+                        />
+
+                        <Text style={mode === "search" ? styles.activeFooterText : styles.nonActiveFooterText}>
+                            Search
+                        </Text>
+
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+
 }
+const styles = StyleSheet.create({
+    container: {
+        display: "flex",
+        flex: 1,
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+    },
+    content:{
+        height:"91.67%"
+    },
+    footer: {
+        backgroundColor: "#8D99AE",
+        width: "100%",
+        height: "8.33%",
+        flexDirection: "row",
+
+    },
+    footerIcon: {
+        height: 32,
+    },
+    footerBtn: {
+        display: "flex",
+        flex: 1,
+        justifyContent: "center",
+        height: "100%",
+    },
+    activeFooterText: {
+        fontFamily: 'Poppins',
+        fontWeight: '400',
+        fontSize: 16,
+        lineHeight: 24,
+        color: "#2B2D42",
+        textAlign:"center"
+    },
+    nonActiveFooterText: {
+        fontFamily: 'Poppins',
+        fontWeight: '400',
+        fontSize: 16,
+        lineHeight: 24,
+        color: "white",
+        textAlign:"center"
+    }
+})
