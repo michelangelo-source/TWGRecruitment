@@ -1,6 +1,6 @@
 import ListPage from "@/components/listPage";
 import React, {useState} from "react";
-import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Image} from "expo-image";
 import SearchPage from "@/components/searchPage";
 
@@ -12,7 +12,7 @@ export default function MainPage() {
         <View style={styles.container}>
             <View style={styles.content}>
 
-            {mode === "lists" ? <ListPage setMode={setMode} setSearchText={setSearchText}/> : <SearchPage searchText={searchText}/>}
+            {mode === "lists" ? <ListPage setMode={setMode} setSearchText={setSearchText}/> : <SearchPage setSearchText={setSearchText} searchText={searchText}/>}
 
             </View>
             <View style={styles.footer}>

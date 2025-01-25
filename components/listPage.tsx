@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, ScrollView, View, TextInput, TouchableOpacity} from "react-native";
+import {ScrollView, StyleSheet, TextInput, View} from "react-native";
 import MainList from "@/components/mainList";
 import {Image} from "expo-image";
 import {mode} from "@/app/mainPage";
@@ -9,6 +9,11 @@ interface ListPageProps {
     setMode:(mode: mode)=>void
 }
 export default function ListPage(props:ListPageProps) {
+    const handleSearch =(text:string)=>{
+        props.setSearchText(text);
+        props.setMode("search");
+    }
+
     const listElements = [
         {title: "React Native"},
         {title: "React JS"},
@@ -22,7 +27,7 @@ export default function ListPage(props:ListPageProps) {
         <View style={styles.header}>
 
             <View style={styles.searchBar}>
-                <TouchableOpacity style={styles.submitIconView} onPress={() => {}}>
+                <View style={styles.submitIconView}  >
                 <Image
                     style={styles.submitIcon}
                     source={require('@/assets/images/search-icon.svg')}
@@ -30,9 +35,9 @@ export default function ListPage(props:ListPageProps) {
                     contentFit={'contain'}
                     contentPosition={"left"}
                 />
-                </TouchableOpacity>
+                </View>
 
-                <TextInput placeholder={"React Native"}/>
+                <TextInput placeholder={"React Native"} onSubmitEditing={({nativeEvent: {text}})=>handleSearch(text)}/>
             </View>
             <View style={styles.settings}>
 

@@ -3,6 +3,7 @@ import {mode} from "@/app/mainPage";
 import React, {useEffect, useState} from "react";
 import {Films, getFilmsByName,} from "@/components/api/filmsByName";
 import {Image} from "expo-image";
+import {handleDate} from "@/components/functions/handleDate";
 
 
 interface mainListProps {
@@ -13,19 +14,7 @@ interface mainListProps {
 
 
 export default function MainList(props: mainListProps) {
-    const handleDate = (date: Date) => {
-        date = new Date(date);
-        let result = ""
-        if (date.getDate() < 10) {
-            result += "0"
-        }
-        result += date.getDate() + "."
-        if (date.getMonth() < 10) {
-            result += "0"
-        }
-        result += (date.getMonth()+1) + "." + date.getFullYear();
-        return result
-    }
+
     const [films, setFilms] = useState<Films>();
     useEffect(() => {
         try {
