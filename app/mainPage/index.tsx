@@ -13,11 +13,14 @@ export default function MainPage() {
             <View style={styles.content}>
 
             {mode === "lists" ? <ListPage setMode={setMode} setSearchText={setSearchText}/> : <SearchPage searchText={searchText}/>}
+
             </View>
             <View style={styles.footer}>
                 <TouchableOpacity style={styles.footerBtn} onPress={() => {
-                    setSearchText(" ")
-                    setMode("lists")
+                    if(mode === "search") {
+                        setSearchText(" ")
+                        setMode("lists")
+                    }
                 }}>
                         <Image
                             style={styles.footerIcon}
@@ -33,8 +36,10 @@ export default function MainPage() {
                         </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.footerBtn} onPress={() => {
-                    setSearchText("React Native")
-                    setMode("search")
+                    if(mode === "lists") {
+                        setSearchText("React Native")
+                        setMode("search")
+                    }
                 }}>
 
                         <Image
@@ -70,7 +75,7 @@ const styles = StyleSheet.create({
     footer: {
         backgroundColor: "#8D99AE",
         width: "100%",
-        height: "8.33%",
+        height: 72,
         flexDirection: "row",
 
     },

@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, ScrollView, View, TextInput, TouchableOpacity} from "react-native";
 import MainList from "@/components/mainList";
 import {Image} from "expo-image";
 import {mode} from "@/app/mainPage";
@@ -11,15 +11,18 @@ interface ListPageProps {
 export default function ListPage(props:ListPageProps) {
     const listElements = [
         {title: "React Native"},
-        {title: "React"},
+        {title: "React JS"},
         {title: "Typescript"},
         {title: "Javascript"},
     ]
+
+
 
     return (<View style={styles.container}>
         <View style={styles.header}>
 
             <View style={styles.searchBar}>
+                <TouchableOpacity style={styles.submitIconView} onPress={() => {}}>
                 <Image
                     style={styles.submitIcon}
                     source={require('@/assets/images/search-icon.svg')}
@@ -27,7 +30,9 @@ export default function ListPage(props:ListPageProps) {
                     contentFit={'contain'}
                     contentPosition={"left"}
                 />
+                </TouchableOpacity>
 
+                <TextInput placeholder={"React Native"}/>
             </View>
             <View style={styles.settings}>
 
@@ -41,14 +46,15 @@ export default function ListPage(props:ListPageProps) {
 
             </View>
         </View>
-        <View>
+        <ScrollView>
             {listElements.map((element, index) => (<MainList setSearchText={props.setSearchText} setMode={props.setMode} title={element.title} key={index}/>))}
-        </View>
-        {/*<View>footer</View>*/}
+        </ScrollView>
     </View>)
 }
 const styles = StyleSheet.create({
-    container: {},
+    container: {
+     height: "100%",
+    },
     header: {
         display: "flex",
         flexDirection: "row",
@@ -59,15 +65,20 @@ const styles = StyleSheet.create({
     },
     searchBar: {
         display: "flex",
+        flexDirection: "row",
         flex: 0.85,
         alignContent: "flex-start",
         borderWidth: 2,
         borderStyle: "solid",
         borderRadius: 16,
         width: "80%",
-        padding: 5
+    },
+    submitIconView:{
+        height:"100%",
+        width:32,
     },
     submitIcon: {
+
         height: "100%",
     },
     settings:{
@@ -77,7 +88,6 @@ const styles = StyleSheet.create({
 
     },
     settingIcon: {
-
         height: 32,
     }
 })

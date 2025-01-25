@@ -1,28 +1,81 @@
-import {StyleSheet, View, Text, TouchableOpacity} from "react-native";
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {mode} from "@/app/mainPage";
+import React, {useEffect, useState} from "react";
+import {Films, getFilmsByName,} from "@/components/api/filmsByName";
+import {Image} from "expo-image";
+
 
 interface mainListProps {
     title: string;
-    setSearchText:(title: string)=>void
-    setMode:(search: mode)=>void
+    setSearchText: (title: string) => void
+    setMode: (search: mode) => void
 }
 
+
 export default function MainList(props: mainListProps) {
+    const handleDate = (date: Date) => {
+        date = new Date(date);
+        let result = ""
+        if (date.getDate() < 10) {
+            result += "0"
+        }
+        result += date.getDate() + "."
+        if (date.getMonth() < 10) {
+            result += "0"
+        }
+        result += (date.getMonth()+1) + "." + date.getFullYear();
+        return result
+    }
+    const [films, setFilms] = useState<Films>();
+    useEffect(() => {
+        try {
+            getFilmsByName(props.title).then((response) => {
+                setFilms(response);
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }, []);
     return (<View style={styles.container}>
         <View style={styles.titleBar}>
             <View style={styles.titleView}>
                 <Text style={styles.titleText}>{props.title}</Text>
             </View>
             <View style={styles.showMoreView}>
-                <TouchableOpacity onPress={()=>{
+                <TouchableOpacity onPress={() => {
                     props.setSearchText(props.title)
                     props.setMode("search")
                 }}>
-                <Text style={styles.showMoreText} >Show more</Text>
+                    <Text style={styles.showMoreText}>Show more</Text>
                 </TouchableOpacity>
             </View>
+
+
         </View>
 
+        <ScrollView horizontal={true}>
+            {films && films.items.map((el) => (
+
+                <View style={styles.element} key={el.snippet.title}>
+                    <Image
+                        style={styles.movieThumbnail}
+                        source={el.snippet.thumbnails.medium.url}
+                        placeholder={el.snippet.title}
+                        contentFit={'fill'}
+                        contentPosition={"center"}
+
+                    />
+                    <Text style={styles.movieTitle}>{el.snippet.title}</Text>
+                    <View style={styles.movieDateView}>
+                        <Text style={styles.movieDateText}>{handleDate(el.snippet.publishedAt)}</Text>
+                    </View>
+
+                </View>
+
+
+            ))}
+
+        </ScrollView>
     </View>)
 }
 const styles = StyleSheet.create({
@@ -59,5 +112,32 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 24,
         textDecorationLine: "underline",
+    },
+    element: {
+        marginVertical:10,
+        marginLeft: 20,
+    },
+    movieThumbnail: {
+        height: 112,
+        width: 180,
+        borderRadius: 16,
+        marginBottom: 5
+    },
+    movieTitle: {
+        width: 180,
+        fontFamily: "Poppins",
+        fontWeight: "500",
+        fontSize: 12,
+        lineHeight: 12,
+    },
+    movieDateView: {
+        justifyContent: "flex-end",
+        alignItems: "flex-end",
+    },
+    movieDateText:{
+        fontFamily: "Poppins",
+        fontWeight: "400",
+        fontSize: 10,
+        lineHeight: 14,
     }
 })
