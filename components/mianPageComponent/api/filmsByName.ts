@@ -42,7 +42,7 @@ export const getFilmsByName = async (searchedText: string,setLoadingState:(state
         throw new Error('no API_key or origin');
     }
     try {
-        const response = await fetch(origin + "?key=" +  Api_Key + "&q=" + searchedText + "&type=video&part=snippet")
+        const response = await fetch(origin + "search?key=" +  Api_Key + "&q=" + searchedText + "&type=video&part=snippet")
         if(!response.ok) {
             setLoadingState("Failed")
         }
@@ -64,7 +64,7 @@ export const getMoreFilmsByNameWithFilters = async (searchedText: string,setLoad
         if(!filter) {
             filter="viewCount"
         }
-        const response = await fetch(origin + "?key=" + Api_Key + "&q=" + searchedText + "&type=video&part=snippet&order="+filter+"&maxResults=50")
+        const response = await fetch(origin + "search?key=" + Api_Key + "&q=" + searchedText + "&type=video&part=snippet&order="+filter+"&maxResults=50")
         if(!response.ok) {
             setLoadingState("Failed")
 
