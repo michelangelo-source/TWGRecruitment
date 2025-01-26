@@ -3,6 +3,7 @@ import Video, {VideoRef} from "react-native-video";
 import {useRef, useState} from "react";
 import {videoPlayerStyles} from "@/components/videoPlayer/styles";
 import {Image} from "expo-image";
+import {router} from "expo-router";
 
 export default function VideoPlayerComponent() {
     const [isVideoMenuVisible, setIsVideoMenuVisible] = useState<boolean>(false)
@@ -41,7 +42,44 @@ export default function VideoPlayerComponent() {
         <View>
             {isVideoMenuVisible &&
                 <View style={videoPlayerStyles.menuVideo}>
-                    <View style={videoPlayerStyles.topPartMenu}></View>
+                    <View style={videoPlayerStyles.topPartMenu}>
+                        <TouchableOpacity onPress={()=>{
+                                router.back()
+                        }} style={videoPlayerStyles.leftView}>
+                            <Image
+                                style={videoPlayerStyles.topIcons}
+                                source={require('@/assets/images/leftarrow-icon.svg')}
+                                placeholder={"blur hash"}
+                                contentFit={'contain'}
+                                tintColor={"white"}
+
+                            />
+                        </TouchableOpacity>
+                            <View style={videoPlayerStyles.topLeftView}>
+                                <TouchableOpacity onPress={()=>{
+
+                                }} style={videoPlayerStyles.leftView}>
+                                <Image
+                                style={videoPlayerStyles.topIcons}
+                                source={require('@/assets/images/volume-icon.svg')}
+                                placeholder={"blur hash"}
+                                contentFit={'contain'}
+                                tintColor={"white"}
+
+                            />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={videoPlayerStyles.leftView}>
+                                <Image
+                                style={videoPlayerStyles.topIcons}
+                                source={require('@/assets/images/airplay-icon.svg')}
+                                placeholder={"blur hash"}
+                                contentFit={'contain'}
+                                tintColor={"white"}
+
+                            />
+                                </TouchableOpacity>
+                            </View>
+                    </View>
 
                     <View style={videoPlayerStyles.centerPartMenu}>
                         <TouchableOpacity onPress={()=>{
@@ -128,7 +166,8 @@ export default function VideoPlayerComponent() {
                             width: 12,
                             height: 12,
                             borderRadius: 6,
-                            backgroundColor: "#C71F1F"
+                            backgroundColor: "#C71F1F",
+                            zIndex:3
                         }}></View>
                         <View style={{
                             width: Dimensions.get('window').width - progressBar,
