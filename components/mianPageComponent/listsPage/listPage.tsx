@@ -3,6 +3,7 @@ import {ScrollView, StyleSheet, TextInput, View} from "react-native";
 import MainList from "@/components/mianPageComponent/listsPage/mainList";
 import {Image} from "expo-image";
 import {mode} from "@/app/mainPage";
+import {Link} from "expo-router";
 
 interface ListPageProps {
     setSearchText: (text: string) => void
@@ -41,6 +42,7 @@ export default function ListPage(props: ListPageProps) {
                            onSubmitEditing={({nativeEvent: {text}}) => handleSearch(text)}/>
             </View>
             <View style={styles.settings}>
+                <Link  style={styles.settingIcon} href={"/mainPage/settings"}>
 
                 <Image
                     style={styles.settingIcon}
@@ -49,6 +51,7 @@ export default function ListPage(props: ListPageProps) {
                     contentFit={'contain'}
                     contentPosition={"right"}
                 />
+                </Link>
 
             </View>
         </View>
@@ -97,5 +100,7 @@ const styles = StyleSheet.create({
     },
     settingIcon: {
         height: 32,
+        width:32,
+        marginLeft: 10,
     }
 })
