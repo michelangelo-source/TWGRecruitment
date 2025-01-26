@@ -10,6 +10,7 @@ export default function VideoPlayerComponent() {
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [duration, setDuration] = useState<number>(0)
     const [progressBar, setProgressBar] = useState<number>(0)
+    const [isMute, setIsMute] = useState<number>(1)
     const [pause, setPause] = useState<boolean>(false)
     const videoRef = useRef<VideoRef>(null);
     const background = require('../../assets/vidoes/broadchurch.mp4');
@@ -57,11 +58,11 @@ export default function VideoPlayerComponent() {
                         </TouchableOpacity>
                             <View style={videoPlayerStyles.topLeftView}>
                                 <TouchableOpacity onPress={()=>{
-
+                                    isMute?setIsMute(0):setIsMute(1)
                                 }} style={videoPlayerStyles.leftView}>
                                 <Image
                                 style={videoPlayerStyles.topIcons}
-                                source={require('@/assets/images/volume-icon.svg')}
+                                source={isMute? require('@/assets/images/volume-icon.svg'):require('@/assets/images/volume-off-icon.svg')}
                                 placeholder={"blur hash"}
                                 contentFit={'contain'}
                                 tintColor={"white"}
@@ -148,6 +149,7 @@ export default function VideoPlayerComponent() {
                         animateBar(data.currentTime)
                     }}
                     paused={pause}
+                    volume={isMute}
                 />
                 <TouchableWithoutFeedback onPress={(event) => {
                     const {pageX} = event.nativeEvent;
