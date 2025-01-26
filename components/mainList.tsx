@@ -62,7 +62,7 @@ export default function MainList(props: mainListProps) {
                 </View>
 
 
-            )):<Text>{loadingState}</Text>}
+            )):<Text style={{fontFamily:"Poppins"}}>{loadingState}</Text>}
 
         </ScrollView>
     </View>)

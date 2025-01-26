@@ -50,10 +50,10 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
             {films &&
                 <>
                     <Text style={styles.resultsText}>{films.pageInfo.totalResults} results found for:<Text
-                        style={{fontWeight: "bold"}}> "{props.searchText}"</Text></Text>
+                        style={{fontFamily:"Poppins-Bold"}}> "{props.searchText}"</Text></Text>
                     <View style={styles.sortedByView}>
                         <Text style={styles.sortedByText}>sorted by:<Text
-                            style={{fontWeight: "bold"}}> "{usageFilter}"</Text></Text>
+                            style={{fontFamily:"Poppins-Bold"}}> "{usageFilter}"</Text></Text>
                     </View>
 
                 </>
@@ -77,7 +77,7 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
                         </View>
 
                     </View>
-                )) : <Text>{loadingState}</Text>}
+                )) : <Text style={{fontFamily:"Poppins"}}>{loadingState}</Text>}
             </ScrollView>
         </View>
     )
@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     chanelNameText: {
-        fontFamily: "Poppins",
-        fontWeight: "700",
+        paddingTop: 5,
+        fontFamily: "Poppins-Bold",
         fontSize: 12,
         lineHeight: 12,
     },

@@ -5,6 +5,7 @@ import {useEffect} from "react";
 export default function RootLayout() {
     const [loaded] = useFonts({
         'Poppins': require('../assets/fonts/Poppins-Regular.ttf'),
+        'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
 
     });
 
