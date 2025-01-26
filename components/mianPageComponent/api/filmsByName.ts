@@ -1,4 +1,7 @@
 export type Snippet = {
+    id:{
+        videoId:string
+    }
     snippet: {
         "publishedAt": Date,
         "title": string,

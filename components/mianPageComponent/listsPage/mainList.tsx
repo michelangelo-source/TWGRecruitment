@@ -4,6 +4,7 @@ import React, {useEffect, useState} from "react";
 import {Films, getFilmsByName, loadingStateType,} from "@/components/mianPageComponent/api/filmsByName";
 import {Image} from "expo-image";
 import {handleDate} from "@/components/functions/handleDate";
+import {Link} from "expo-router";
 
 
 interface mainListProps {
@@ -14,11 +15,11 @@ interface mainListProps {
 
 
 export default function MainList(props: mainListProps) {
-    const[loadingState, setLoadingState] = useState<loadingStateType>("Loading...");
+    const [loadingState, setLoadingState] = useState<loadingStateType>("Loading...");
     const [films, setFilms] = useState<Films>();
     useEffect(() => {
         try {
-            getFilmsByName(props.title,setLoadingState).then((response) => {
+            getFilmsByName(props.title, setLoadingState).then((response) => {
                 setFilms(response);
             })
         } catch (e) {
@@ -43,26 +44,30 @@ export default function MainList(props: mainListProps) {
         </View>
 
         <ScrollView horizontal={true}>
-            {films && loadingState==="Loaded"  ?films.items.map((el,index) => (
+            {films && loadingState === "Loaded" ? films.items.map((el, index) => (
 
-                <View style={styles.element} key={index}>
-                    <Image
-                        style={styles.movieThumbnail}
-                        source={el.snippet.thumbnails.medium.url}
-                        placeholder={el.snippet.title}
-                        contentFit={'fill'}
-                        contentPosition={"center"}
+                <Link href={{
+                    pathname: '/videoPage',
+                    params: {videoId: el.id.videoId}
+                }} style={styles.element} key={index}>
+                    <View style={styles.element}>
+                        <Image
+                            style={styles.movieThumbnail}
+                            source={el.snippet.thumbnails.medium.url}
+                            placeholder={el.snippet.title}
+                            contentFit={'fill'}
+                            contentPosition={"center"}
 
-                    />
-                    <Text style={styles.movieTitle}>{el.snippet.title}</Text>
-                    <View style={styles.movieDateView}>
-                        <Text style={styles.movieDateText}>{handleDate(el.snippet.publishedAt)}</Text>
+                        />
+                        <Text style={styles.movieTitle}>{el.snippet.title}</Text>
+                        <View style={styles.movieDateView}>
+                            <Text style={styles.movieDateText}>{handleDate(el.snippet.publishedAt)}</Text>
+                        </View>
                     </View>
+                </Link>
 
-                </View>
 
-
-            )):<Text style={{fontFamily:"Poppins"}}>{loadingState}</Text>}
+            )) : <Text style={{fontFamily: "Poppins"}}>{loadingState}</Text>}
 
         </ScrollView>
     </View>)
@@ -103,7 +108,7 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline",
     },
     element: {
-        marginVertical:10,
+        marginVertical: 10,
         marginLeft: 20,
     },
     movieThumbnail: {
@@ -124,7 +129,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         alignItems: "flex-end",
     },
-    movieDateText:{
+    movieDateText: {
         fontFamily: "Poppins",
         fontWeight: "400",
         fontSize: 10,

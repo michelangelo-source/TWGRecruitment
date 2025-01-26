@@ -9,6 +9,7 @@ import {
 } from "@/components/mianPageComponent/api/filmsByName";
 import {handleDate} from "@/components/functions/handleDate";
 import ChangeFilterForm from "@/components/mianPageComponent/searchPage/changeFilterForm";
+import {Link} from "expo-router";
 
 export type DisplayToUserFilters = "Most popular" | "Upload date: latest" | "Upload date: oldest"
 
@@ -47,8 +48,9 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
             setLoadingState("Loading...");
             getMoreFilmsByNameWithFilters(props.searchText, setLoadingState, filterText).then((response) => {
                 if (filterText === "relevance") {
-                    response.items.sort((a, b)=>{
-                        return new Date(a.snippet.publishedAt).getTime() - new Date( b.snippet.publishedAt).getTime();})
+                    response.items.sort((a, b) => {
+                        return new Date(a.snippet.publishedAt).getTime() - new Date(b.snippet.publishedAt).getTime();
+                    })
                     setFilms(response);
                 } else {
                     setFilms(response);
@@ -77,42 +79,47 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
                                onSubmitEditing={({nativeEvent: {text}}) => handleSearch(text)}/>
                 </View>
             </View>
-            {films && loadingState==="Loaded"&&
+            {films && loadingState === "Loaded" &&
                 <View>
                     <View>
-                    <Text style={styles.resultsText}>{films.pageInfo.totalResults} results found for:<Text
-                        style={{fontFamily: "Poppins-Bold"}}> "{props.searchText}"</Text></Text>
+                        <Text style={styles.resultsText}>{films.pageInfo.totalResults} results found for:<Text
+                            style={{fontFamily: "Poppins-Bold"}}> "{props.searchText}"</Text></Text>
 
                     </View>
                     <TouchableOpacity style={styles.sortedByView}>
-                        <Text style={styles.sortedByText}  onPress={() => {
+                        <Text style={styles.sortedByText} onPress={() => {
                             setChangeFilter(true)
                         }}>sorted by:
 
-                                <Text style={styles.sortedByTextBold}> "{usageFilter}"</Text>
+                            <Text style={styles.sortedByTextBold}> "{usageFilter}"</Text>
                         </Text>
                     </TouchableOpacity>
                 </View>
             }
             <ScrollView>
                 {films && loadingState === "Loaded" ? films.items.map((el, index) => (
-                    <View style={styles.element} key={index}>
-                        <Image
-                            style={styles.movieThumbnail}
-                            source={el.snippet.thumbnails.medium.url}
-                            placeholder={el.snippet.title}
-                            contentFit={'fill'}
-                            contentPosition={"center"}
-                        />
-                        <View style={styles.chanelNameView}>
-                            <Text style={styles.chanelNameText}>{el.snippet.channelTitle}</Text>
-                        </View>
-                        <Text style={styles.movieTitle}>{el.snippet.title}</Text>
-                        <View style={styles.movieDateView}>
-                            <Text style={styles.movieDateText}>{handleDate(el.snippet.publishedAt)}</Text>
-                        </View>
+                    <Link key={index} style={styles.element} href={{
+                        pathname: "/videoPage",
+                        params: {videoId: el.id.videoId}
+                    }}>
+                        <View style={styles.element}>
+                            <Image
+                                style={styles.movieThumbnail}
+                                source={el.snippet.thumbnails.medium.url}
+                                placeholder={el.snippet.title}
+                                contentFit={'fill'}
+                                contentPosition={"center"}
+                            />
+                            <View style={styles.chanelNameView}>
+                                <Text style={styles.chanelNameText}>{el.snippet.channelTitle}</Text>
+                            </View>
+                            <Text style={styles.movieTitle}>{el.snippet.title}</Text>
+                            <View style={styles.movieDateView}>
+                                <Text style={styles.movieDateText}>{handleDate(el.snippet.publishedAt)}</Text>
+                            </View>
 
-                    </View>
+                        </View>
+                    </Link>
                 )) : <Text style={{fontFamily: "Poppins"}}>{loadingState}</Text>}
             </ScrollView>
             {changeFilter && <ChangeFilterForm usageFilter={usageFilter} setUsageFilter={setUsageFilter}
@@ -149,8 +156,8 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     sortedByView: {
-    display:"flex",
-        justifyContent:"flex-end",
+        display: "flex",
+        justifyContent: "flex-end",
         alignItems: "flex-end",
         paddingHorizontal: 20,
     },
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 24,
     },
-    sortedByTextBold:{
+    sortedByTextBold: {
         fontFamily: "Poppins-Bold",
     },
 
