@@ -1,7 +1,7 @@
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {mode} from "@/app/mainPage";
 import React, {useEffect, useState} from "react";
-import {Films, getFilmsByName, loadingStateType,} from "@/components/api/filmsByName";
+import {Films, getFilmsByName, loadingStateType,} from "@/components/mianPageComponent/api/filmsByName";
 import {Image} from "expo-image";
 import {handleDate} from "@/components/functions/handleDate";
 
@@ -14,7 +14,7 @@ interface mainListProps {
 
 
 export default function MainList(props: mainListProps) {
-    const[loadingState, setLoadingState] = useState<loadingStateType>("Loading..");
+    const[loadingState, setLoadingState] = useState<loadingStateType>("Loading...");
     const [films, setFilms] = useState<Films>();
     useEffect(() => {
         try {

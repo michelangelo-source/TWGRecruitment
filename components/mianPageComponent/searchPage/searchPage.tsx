@@ -1,8 +1,14 @@
-import {ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
+import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {Image} from "expo-image";
 import React, {useEffect, useState} from "react";
-import {Films, getMoreFilmsByNameWithFilters, loadingStateType, VideoFilters} from "@/components/api/filmsByName";
+import {
+    Films,
+    getMoreFilmsByNameWithFilters,
+    loadingStateType,
+    VideoFilters
+} from "@/components/mianPageComponent/api/filmsByName";
 import {handleDate} from "@/components/functions/handleDate";
+import ChangeFilterForm from "@/components/mianPageComponent/searchPage/changeFilterForm";
 
 export type DisplayToUserFilters = "Most popular" | "Upload date: latest" | "Upload date: oldest"
 
@@ -13,16 +19,40 @@ interface SearchPageProps {
 
 export default function SearchPage(props: SearchPageProps): JSX.Element {
     const [usageFilter, setUsageFilter] = useState<DisplayToUserFilters>("Most popular");
+    const [changeFilter, setChangeFilter] = useState<boolean>(false);
     const [filterText, setFilterText] = useState<VideoFilters>("viewCount");
     const [films, setFilms] = useState<Films>();
-    const [loadingState, setLoadingState] = useState<loadingStateType>("Loading..");
+    const [loadingState, setLoadingState] = useState<loadingStateType>("Loading...");
     const handleSearch = (text: string) => {
         props.setSearchText(text);
     }
     useEffect(() => {
+        switch (usageFilter) {
+            case "Most popular": {
+                setFilterText("viewCount")
+                break;
+            }
+            case "Upload date: latest": {
+                setFilterText("date")
+                break;
+            }
+            case "Upload date: oldest": {
+                setFilterText("relevance")
+                break
+            }
+        }
+    }, [usageFilter]);
+    useEffect(() => {
         try {
+            setLoadingState("Loading...");
             getMoreFilmsByNameWithFilters(props.searchText, setLoadingState, filterText).then((response) => {
-                setFilms(response);
+                if (filterText === "relevance") {
+                    response.items.sort((a, b)=>{
+                        return new Date(a.snippet.publishedAt).getTime() - new Date( b.snippet.publishedAt).getTime();})
+                    setFilms(response);
+                } else {
+                    setFilms(response);
+                }
             })
         } catch (e) {
             console.log(e)
@@ -47,16 +77,22 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
                                onSubmitEditing={({nativeEvent: {text}}) => handleSearch(text)}/>
                 </View>
             </View>
-            {films &&
-                <>
+            {films && loadingState==="Loaded"&&
+                <View>
+                    <View>
                     <Text style={styles.resultsText}>{films.pageInfo.totalResults} results found for:<Text
-                        style={{fontFamily:"Poppins-Bold"}}> "{props.searchText}"</Text></Text>
-                    <View style={styles.sortedByView}>
-                        <Text style={styles.sortedByText}>sorted by:<Text
-                            style={{fontFamily:"Poppins-Bold"}}> "{usageFilter}"</Text></Text>
-                    </View>
+                        style={{fontFamily: "Poppins-Bold"}}> "{props.searchText}"</Text></Text>
 
-                </>
+                    </View>
+                    <TouchableOpacity style={styles.sortedByView}>
+                        <Text style={styles.sortedByText}  onPress={() => {
+                            setChangeFilter(true)
+                        }}>sorted by:
+
+                                <Text style={styles.sortedByTextBold}> "{usageFilter}"</Text>
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             }
             <ScrollView>
                 {films && loadingState === "Loaded" ? films.items.map((el, index) => (
@@ -77,8 +113,10 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
                         </View>
 
                     </View>
-                )) : <Text style={{fontFamily:"Poppins"}}>{loadingState}</Text>}
+                )) : <Text style={{fontFamily: "Poppins"}}>{loadingState}</Text>}
             </ScrollView>
+            {changeFilter && <ChangeFilterForm usageFilter={usageFilter} setUsageFilter={setUsageFilter}
+                                               setChangeFilter={setChangeFilter}/>}
         </View>
     )
 }
@@ -111,7 +149,8 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     sortedByView: {
-        justifyContent: "flex-end",
+    display:"flex",
+        justifyContent:"flex-end",
         alignItems: "flex-end",
         paddingHorizontal: 20,
     },
@@ -121,6 +160,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 24,
     },
+    sortedByTextBold:{
+        fontFamily: "Poppins-Bold",
+    },
+
     resultsText: {
         fontFamily: "Poppins",
         fontWeight: "400",
@@ -167,5 +210,4 @@ const styles = StyleSheet.create({
         fontSize: 10,
         lineHeight: 14,
     }
-
 })

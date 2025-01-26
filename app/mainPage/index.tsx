@@ -1,8 +1,8 @@
-import ListPage from "@/components/listPage";
 import React, {useState} from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Image} from "expo-image";
-import SearchPage from "@/components/searchPage";
+import ListPage from "@/components/mianPageComponent/listsPage/listPage";
+import SearchPage from "@/components/mianPageComponent/searchPage/searchPage";
 
 export type mode = "lists" | "search"
 export default function MainPage() {

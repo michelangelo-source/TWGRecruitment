@@ -1,6 +1,6 @@
 import React from 'react';
 import {ScrollView, StyleSheet, TextInput, View} from "react-native";
-import MainList from "@/components/mainList";
+import MainList from "@/components/mianPageComponent/listsPage/mainList";
 import {Image} from "expo-image";
 import {mode} from "@/app/mainPage";
 

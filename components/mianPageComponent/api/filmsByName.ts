@@ -29,8 +29,8 @@ export type Films = {
     },
     items: Snippet[]
 }
-export type VideoFilters="viewCount"|"date"//|"rating"|"relevance"|"title"|"videoCount "
-export type loadingStateType="Loading.."|"Loaded"|"Failed"
+export type VideoFilters="viewCount"|"date"|"relevance"//|"rating"|"title"|"videoCount "
+export type loadingStateType="Loading..."|"Loaded"|"Failed"
 export const getFilmsByName = async (searchedText: string,setLoadingState:(state:loadingStateType)=>void): Promise<Films> => {
     const Api_Key = process.env.EXPO_PUBLIC_API_KEY;
     const origin = process.env.EXPO_PUBLIC_ORIGIN;
@@ -42,7 +42,6 @@ export const getFilmsByName = async (searchedText: string,setLoadingState:(state
         const response = await fetch(origin + "?key=" +  Api_Key + "&q=" + searchedText + "&type=video&part=snippet")
         if(!response.ok) {
             setLoadingState("Failed")
-            throw new Error("sth went wrong");
         }
         setLoadingState("Loaded")
         return await response.json();
@@ -65,7 +64,6 @@ export const getMoreFilmsByNameWithFilters = async (searchedText: string,setLoad
         const response = await fetch(origin + "?key=" + Api_Key + "&q=" + searchedText + "&type=video&part=snippet&order="+filter+"&maxResults=50")
         if(!response.ok) {
             setLoadingState("Failed")
-            throw new Error("sth went wrong")
 
         }
         setLoadingState("Loaded")
