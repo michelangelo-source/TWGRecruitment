@@ -1,7 +1,7 @@
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {mode} from "@/app/mainPage";
 import React, {useEffect, useState} from "react";
-import {Films, getFilmsByName,} from "@/components/api/filmsByName";
+import {Films, getFilmsByName, loadingStateType,} from "@/components/api/filmsByName";
 import {Image} from "expo-image";
 import {handleDate} from "@/components/functions/handleDate";
 
@@ -14,11 +14,11 @@ interface mainListProps {
 
 
 export default function MainList(props: mainListProps) {
-
+    const[loadingState, setLoadingState] = useState<loadingStateType>("Loading..");
     const [films, setFilms] = useState<Films>();
     useEffect(() => {
         try {
-            getFilmsByName(props.title).then((response) => {
+            getFilmsByName(props.title,setLoadingState).then((response) => {
                 setFilms(response);
             })
         } catch (e) {
@@ -43,9 +43,9 @@ export default function MainList(props: mainListProps) {
         </View>
 
         <ScrollView horizontal={true}>
-            {films && films.items.map((el) => (
+            {films && loadingState==="Loaded"  ?films.items.map((el,index) => (
 
-                <View style={styles.element} key={el.snippet.title}>
+                <View style={styles.element} key={index}>
                     <Image
                         style={styles.movieThumbnail}
                         source={el.snippet.thumbnails.medium.url}
@@ -62,7 +62,7 @@ export default function MainList(props: mainListProps) {
                 </View>
 
 
-            ))}
+            )):<Text>{loadingState}</Text>}
 
         </ScrollView>
     </View>)
@@ -110,9 +110,10 @@ const styles = StyleSheet.create({
         height: 112,
         width: 180,
         borderRadius: 16,
-        marginBottom: 5
+        marginBottom: 10
     },
     movieTitle: {
+        paddingVertical: 5,
         width: 180,
         fontFamily: "Poppins",
         fontWeight: "500",

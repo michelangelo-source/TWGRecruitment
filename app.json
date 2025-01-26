@@ -23,6 +23,12 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Poppins-Black.ttf"]
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -32,8 +38,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      "expo-font"
+      ]
     ],
     "experiments": {
       "typedRoutes": true

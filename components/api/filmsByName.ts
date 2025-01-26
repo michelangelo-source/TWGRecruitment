@@ -30,37 +30,48 @@ export type Films = {
     items: Snippet[]
 }
 export type VideoFilters="viewCount"|"date"//|"rating"|"relevance"|"title"|"videoCount "
-export const getFilmsByName = async (searchedText: string): Promise<Films> => {
+export type loadingStateType="Loading.."|"Loaded"|"Failed"
+export const getFilmsByName = async (searchedText: string,setLoadingState:(state:loadingStateType)=>void): Promise<Films> => {
     const Api_Key = process.env.EXPO_PUBLIC_API_KEY;
     const origin = process.env.EXPO_PUBLIC_ORIGIN;
     if (!Api_Key || !origin) {
+        setLoadingState("Failed")
         throw new Error('no API_key or origin');
     }
     try {
-        const response = await fetch(origin + "?key=" + Api_Key + "&q=" + searchedText + "&type=video&part=snippet")
+        const response = await fetch(origin + "?key=" +  Api_Key + "&q=" + searchedText + "&type=video&part=snippet")
+        if(!response.ok) {
+            setLoadingState("Failed")
+            throw new Error("sth went wrong");
+        }
+        setLoadingState("Loaded")
         return await response.json();
     } catch (err) {
+        setLoadingState("Failed")
         throw err;
     }
 }
-export const getMoreFilmsByNameWithFilters = async (searchedText: string,filter?:VideoFilters): Promise<Films> => {
+export const getMoreFilmsByNameWithFilters = async (searchedText: string,setLoadingState:(state:loadingStateType)=>void,filter?:VideoFilters): Promise<Films> => {
     const Api_Key = process.env.EXPO_PUBLIC_API_KEY;
     const origin = process.env.EXPO_PUBLIC_ORIGIN;
     if (!Api_Key || !origin) {
+        setLoadingState("Failed")
         throw new Error('no API_key or origin');
     }
     try {
         if(!filter) {
             filter="viewCount"
         }
-
         const response = await fetch(origin + "?key=" + Api_Key + "&q=" + searchedText + "&type=video&part=snippet&order="+filter+"&maxResults=50")
         if(!response.ok) {
+            setLoadingState("Failed")
             throw new Error("sth went wrong")
 
         }
+        setLoadingState("Loaded")
         return await response.json();
     } catch (err) {
+        setLoadingState("Failed")
         throw err;
     }
 }

@@ -5,39 +5,40 @@ import {Image} from "expo-image";
 import {mode} from "@/app/mainPage";
 
 interface ListPageProps {
-    setSearchText:(text:string)=>void
-    setMode:(mode: mode)=>void
+    setSearchText: (text: string) => void
+    setMode: (mode: mode) => void
 }
-export default function ListPage(props:ListPageProps) {
-    const handleSearch =(text:string)=>{
+
+export default function ListPage(props: ListPageProps) {
+    const handleSearch = (text: string) => {
         props.setSearchText(text);
         props.setMode("search");
     }
 
     const listElements = [
         {title: "React Native"},
-        {title: "React JS"},
-        {title: "Typescript"},
-        {title: "Javascript"},
+        //{title: "React JS"},
+        // {title: "Typescript"},
+        // {title: "Javascript"},
     ]
-
 
 
     return (<View style={styles.container}>
         <View style={styles.header}>
 
             <View style={styles.searchBar}>
-                <View style={styles.submitIconView}  >
-                <Image
-                    style={styles.submitIcon}
-                    source={require('@/assets/images/search-icon.svg')}
-                    placeholder={"blur hash"}
-                    contentFit={'contain'}
-                    contentPosition={"left"}
-                />
+                <View style={styles.submitIconView}>
+                    <Image
+                        style={styles.submitIcon}
+                        source={require('@/assets/images/search-icon.svg')}
+                        placeholder={"blur hash"}
+                        contentFit={'contain'}
+                        contentPosition={"left"}
+                    />
                 </View>
 
-                <TextInput placeholder={"React Native"} onSubmitEditing={({nativeEvent: {text}})=>handleSearch(text)}/>
+                <TextInput placeholder={"React Native"}
+                           onSubmitEditing={({nativeEvent: {text}}) => handleSearch(text)}/>
             </View>
             <View style={styles.settings}>
 
@@ -52,13 +53,15 @@ export default function ListPage(props:ListPageProps) {
             </View>
         </View>
         <ScrollView>
-            {listElements.map((element, index) => (<MainList setSearchText={props.setSearchText} setMode={props.setMode} title={element.title} key={index}/>))}
+            {listElements.map((element, index) => (
+                <MainList setSearchText={props.setSearchText} setMode={props.setMode} title={element.title}
+                          key={index}/>))}
         </ScrollView>
     </View>)
 }
 const styles = StyleSheet.create({
     container: {
-     height: "100%",
+        height: "100%",
     },
     header: {
         display: "flex",
@@ -78,17 +81,17 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         width: "80%",
     },
-    submitIconView:{
-        height:"100%",
-        width:32,
+    submitIconView: {
+        height: "100%",
+        width: 32,
     },
     submitIcon: {
 
         height: "100%",
     },
-    settings:{
+    settings: {
         display: "flex",
-        flex:0.15,
+        flex: 0.15,
         justifyContent: "center",
 
     },

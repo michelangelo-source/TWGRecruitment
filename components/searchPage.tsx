@@ -1,28 +1,30 @@
 import {ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
 import {Image} from "expo-image";
 import React, {useEffect, useState} from "react";
-import {Films, getMoreFilmsByNameWithFilters, VideoFilters} from "@/components/api/filmsByName";
+import {Films, getMoreFilmsByNameWithFilters, loadingStateType, VideoFilters} from "@/components/api/filmsByName";
 import {handleDate} from "@/components/functions/handleDate";
 
-export type DisplayToUserFilters="Most popular"| "Upload date: latest"|"Upload date: oldest"
+export type DisplayToUserFilters = "Most popular" | "Upload date: latest" | "Upload date: oldest"
+
 interface SearchPageProps {
     searchText: string,
     setSearchText: (text: string) => void
 }
+
 export default function SearchPage(props: SearchPageProps): JSX.Element {
-    const [usageFilter,setUsageFilter] = useState<DisplayToUserFilters>("Most popular");
+    const [usageFilter, setUsageFilter] = useState<DisplayToUserFilters>("Most popular");
     const [filterText, setFilterText] = useState<VideoFilters>("viewCount");
     const [films, setFilms] = useState<Films>();
-
+    const [loadingState, setLoadingState] = useState<loadingStateType>("Loading..");
     const handleSearch = (text: string) => {
         props.setSearchText(text);
     }
     useEffect(() => {
         try {
-            getMoreFilmsByNameWithFilters(props.searchText, filterText).then((response) => {
+            getMoreFilmsByNameWithFilters(props.searchText, setLoadingState, filterText).then((response) => {
                 setFilms(response);
             })
-        }catch (e){
+        } catch (e) {
             console.log(e)
         }
     }, [props.searchText, filterText]);
@@ -45,35 +47,37 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
                                onSubmitEditing={({nativeEvent: {text}}) => handleSearch(text)}/>
                 </View>
             </View>
-            {films&&
+            {films &&
                 <>
-                    <Text style={styles.resultsText}>{films.pageInfo.totalResults} results found for:<Text style={{fontWeight:"bold"}}> "{props.searchText}"</Text></Text>
+                    <Text style={styles.resultsText}>{films.pageInfo.totalResults} results found for:<Text
+                        style={{fontWeight: "bold"}}> "{props.searchText}"</Text></Text>
                     <View style={styles.sortedByView}>
-                    <Text style={styles.sortedByText}>sorted by:<Text style={{fontWeight:"bold"}}> "{usageFilter}"</Text></Text>
+                        <Text style={styles.sortedByText}>sorted by:<Text
+                            style={{fontWeight: "bold"}}> "{usageFilter}"</Text></Text>
                     </View>
 
                 </>
             }
             <ScrollView>
-                {films && films.items.map((el,index) => (
-                        <View style={styles.element} key={index}>
-                            <Image
-                                style={styles.movieThumbnail}
-                                source={el.snippet.thumbnails.medium.url}
-                                placeholder={el.snippet.title}
-                                contentFit={'fill'}
-                                contentPosition={"center"}
-                            />
-                            <View style={styles.chanelNameView}>
-                                <Text style={styles.chanelNameText}>{el.snippet.channelTitle}</Text>
-                            </View>
-                            <Text style={styles.movieTitle}>{el.snippet.title}</Text>
-                            <View style={styles.movieDateView}>
-                                <Text style={styles.movieDateText}>{handleDate(el.snippet.publishedAt)}</Text>
-                            </View>
+                {films && loadingState === "Loaded" ? films.items.map((el, index) => (
+                    <View style={styles.element} key={index}>
+                        <Image
+                            style={styles.movieThumbnail}
+                            source={el.snippet.thumbnails.medium.url}
+                            placeholder={el.snippet.title}
+                            contentFit={'fill'}
+                            contentPosition={"center"}
+                        />
+                        <View style={styles.chanelNameView}>
+                            <Text style={styles.chanelNameText}>{el.snippet.channelTitle}</Text>
+                        </View>
+                        <Text style={styles.movieTitle}>{el.snippet.title}</Text>
+                        <View style={styles.movieDateView}>
+                            <Text style={styles.movieDateText}>{handleDate(el.snippet.publishedAt)}</Text>
+                        </View>
 
                     </View>
-                ))}
+                )) : <Text>{loadingState}</Text>}
             </ScrollView>
         </View>
     )
@@ -106,18 +110,18 @@ const styles = StyleSheet.create({
     submitIcon: {
         height: "100%",
     },
-    sortedByView:{
-        justifyContent:"flex-end",
+    sortedByView: {
+        justifyContent: "flex-end",
         alignItems: "flex-end",
         paddingHorizontal: 20,
     },
-    sortedByText:{
+    sortedByText: {
         fontFamily: "Poppins",
         fontWeight: "400",
         fontSize: 12,
         lineHeight: 24,
     },
-    resultsText:{
+    resultsText: {
         fontFamily: "Poppins",
         fontWeight: "400",
         fontSize: 10,
@@ -125,38 +129,39 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     element: {
-        marginVertical:10,
+        marginVertical: 10,
         marginLeft: 20,
-        width:345
+        width: 345
     },
     movieThumbnail: {
         height: 200,
         borderRadius: 16,
         marginBottom: 5
     },
-    chanelNameView:{
+    chanelNameView: {
         justifyContent: "flex-start",
         alignItems: "flex-start",
-        marginVertical:10
+        marginVertical: 10
     },
-    chanelNameText:{
+    chanelNameText: {
         fontFamily: "Poppins",
         fontWeight: "700",
         fontSize: 12,
         lineHeight: 12,
     },
     movieTitle: {
+        paddingVertical: 5,
         fontFamily: "Poppins",
         fontWeight: "500",
         fontSize: 12,
         lineHeight: 12,
-        marginBottom:10
+        marginBottom: 10
     },
     movieDateView: {
         justifyContent: "flex-end",
         alignItems: "flex-end",
     },
-    movieDateText:{
+    movieDateText: {
         fontFamily: "Poppins",
         fontWeight: "400",
         fontSize: 10,
