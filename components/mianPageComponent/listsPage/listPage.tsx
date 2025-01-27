@@ -18,9 +18,9 @@ export default function ListPage(props: ListPageProps) {
 
     const listElements = [
         {title: "React Native"},
-        //{title: "React JS"},
-        // {title: "Typescript"},
-        // {title: "Javascript"},
+        {title: "React JS"},
+        {title: "Typescript"},
+        {title: "Javascript"},
     ]
 
 

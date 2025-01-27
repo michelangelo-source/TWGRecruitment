@@ -1,14 +1,94 @@
-import {Dimensions, StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native'
+import {Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {router} from "expo-router";
 import {Image} from "expo-image";
 import DatePicker from "react-native-date-picker";
-import {useState} from "react";
-import {handleTime} from "@/components/functions/handleTime";
+import {useEffect, useRef, useState} from "react";
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import {SchedulableTriggerInputTypes} from "expo-notifications/src/Notifications.types";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
+});
 
 export default function settings() {
-    const [date, setDate] = useState(new Date())
-    const [isEnabled, setIsEnabled] = useState(true)
+    const [alarmHour,setAlarmHour] = useState<number>(new Date(Date.now()).getHours());
+    const [alarmMinutes,setAlarmMinutes] = useState<number>(new Date(Date.now()).getMinutes());
+    const [date]=useState(new Date());
+    const [isEnabled, setIsEnabled] = useState(false)
     const [changeHourMode, setChangeHourMode] = useState(false)
+
+
+    const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+        undefined
+    );
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
+    const notificationListener = useRef<Notifications.EventSubscription>();
+    const responseListener = useRef<Notifications.EventSubscription>();
+
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
+
+        if (Platform.OS === 'android') {
+            Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+        }
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        });
+
+        checkScheduledNotifications().then();
+
+        return () => {
+            notificationListener.current &&
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            responseListener.current &&
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
+    }, []);
+    const turnOnOfNotifications=async ()=>{
+        if(!isEnabled){
+            await scheduleNotification()
+        }else{
+            await cancelAllScheduledNotifications()
+        }
+    }
+
+     const checkScheduledNotifications=async()=> {
+        const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+        if(scheduledNotifications.length > 0) {
+            setIsEnabled(true)
+        }
+    }
+
+     const scheduleNotification =async()=> {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Learn something new",
+                body: 'Start learning you will thank yourself tomorrow',
+            },
+           trigger:{
+               type: SchedulableTriggerInputTypes.DAILY,
+               hour: alarmHour,
+               minute: alarmMinutes,
+           },
+        });
+       await checkScheduledNotifications()
+    }
+
+     const cancelAllScheduledNotifications =async()=> {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        setIsEnabled(false)
+    }
+
     return (<View style={styles.container}>
         <View style={styles.topView}>
             <TouchableOpacity onPress={() => {
@@ -37,45 +117,52 @@ export default function settings() {
         </View>
         <View style={styles.notificationTitleView}>
             <Image
-            style={styles.notificationIcon}
-            source={require('@/assets/images/notification-icon.svg')}
-            placeholder={"blur hash"}
-            contentFit={'contain'}
-        />
+                style={styles.notificationIcon}
+                source={require('@/assets/images/notification-icon.svg')}
+                placeholder={"blur hash"}
+                contentFit={'contain'}
+            />
             <Text style={styles.notificationTitle}>Learning reminders</Text>
         </View>
         <View style={styles.notificationSetupView}>
-              <Text>Repeat everyday at:</Text>
+            <Text>Repeat everyday at:</Text>
 
-          <TouchableOpacity onPress={()=>{
-              setChangeHourMode(true)
-          }} style={{flexDirection:"row"}}>
-              <Image
-                  style={styles.clockIcon}
-                  source={require('@/assets/images/clock-icon.svg')}
-                  placeholder={"clock"}
-                  contentFit={'contain'}
-              />
-            <Text> {handleTime(date)}</Text>
-          </TouchableOpacity>
-            <Switch
-                trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={()=>setIsEnabled(!isEnabled)}
-                value={isEnabled}
-            />
+            <TouchableOpacity onPress={() => {
+                setChangeHourMode(true)
+            }} style={{flexDirection: "row"}}>
+                <Image
+                    style={styles.clockIcon}
+                    source={require('@/assets/images/clock-icon.svg')}
+                    placeholder={"clock"}
+                    contentFit={'contain'}
+                />
+                <Text> {alarmHour}:{alarmMinutes}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={isEnabled ? styles.switchOnBack : styles.switchOfBack}
+                              onPress={async () => {
+                                  await turnOnOfNotifications()
+                              }}
+            >
+                <View style={isEnabled ? styles.switchOnFront : styles.switchOfFront}>
+
+                </View>
+            </TouchableOpacity>
+
+
         </View>
         <View>
             <Text style={styles.bottomText}>You will receive friendly reminder to remember to study</Text>
         </View>
 
 
-
-        {changeHourMode&&
+        {changeHourMode &&
             <View style={styles.changeHourView}>
-                <DatePicker mode={"time"} date={date} onDateChange={(data)=>setDate(data)}/>
-                <TouchableOpacity onPress={()=>{
+                <DatePicker mode={"time"} date={date} onDateChange={async (data) => {
+                    setAlarmHour( data.getHours())
+                    setAlarmMinutes(data.getMinutes())
+                    await cancelAllScheduledNotifications()
+                }}/>
+                <TouchableOpacity onPress={() => {
                     setChangeHourMode(false)
                 }}><Text style={styles.confirmText}>Confirm</Text></TouchableOpacity>
             </View>}
@@ -126,46 +213,133 @@ const styles = StyleSheet.create({
         fontFamily: "Poppins-Bold",
         fontSize: 14,
         color: "#2B2D42"
-    },notificationTitleView:{
-        alignItems:"center",
+    }, notificationTitleView: {
+        alignItems: "center",
         justifyContent: "flex-start",
-        flexDirection:"row",
-        marginLeft:20,
-        marginVertical:15
-    },notificationIcon:{
+        flexDirection: "row",
+        marginLeft: 20,
+        marginVertical: 15
+    }, notificationIcon: {
         width: 36,
-        height:36,
-        marginRight:10
-    },notificationTitle:{
+        height: 36,
+        marginRight: 10
+    }, notificationTitle: {
         fontFamily: "Poppins",
         fontSize: 14,
         color: "#2B2D42"
-    },notificationSetupView:{
-        flexDirection:"row",
-        justifyContent:"space-between",
-        paddingHorizontal:30,
-    },clockIcon:{
-        width:24,
-        height:24,
+    }, notificationSetupView: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 30,
+    }, clockIcon: {
+        width: 24,
+        height: 24,
     },
-    bottomText:{
-        fontFamily:"Poppins-Bold",
+
+    switchOfBack: {
+        width: 66,
+        height: 36,
+        borderRadius: 16,
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderColor: "#2B2D42",
+        paddingHorizontal: 5,
+        justifyContent: "center"
+    },
+    switchOnBack: {
+        width: 66,
+        height: 36,
+        borderRadius: 16,
+        backgroundColor: "#2B2D42",
+        borderWidth: 1,
+        borderColor: "#2B2D42",
+        paddingHorizontal: 5,
+        justifyContent: "center",
+        alignItems: "flex-end"
+    },
+    switchOfFront: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: "#2B2D42",
+    },
+    switchOnFront: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: "white",
+
+    },
+
+
+    bottomText: {
+        fontFamily: "Poppins-Bold",
         fontSize: 10,
-        marginTop:10,
-        paddingHorizontal:30
-    },changeHourView:{
-        position:"absolute",
-        top:Dimensions.get("screen").height/2-250,
-        left:Dimensions.get("screen").width/2-125,
-        height:300,
-        width:250,
-        backgroundColor:"#8D99AE",
-        alignItems:"center",
-        justifyContent:"space-evenly",
-        borderRadius:16
-    },confirmText:{
-        fontFamily:"Poppins",
+        marginTop: 10,
+        paddingHorizontal: 30
+    }, changeHourView: {
+        position: "absolute",
+        top: Dimensions.get("screen").height / 2 - 250,
+        left: Dimensions.get("screen").width / 2 - 125,
+        height: 300,
+        width: 250,
+        backgroundColor: "#8D99AE",
+        alignItems: "center",
+        justifyContent: "space-evenly",
+        borderRadius: 16
+    }, confirmText: {
+        fontFamily: "Poppins",
         fontSize: 16,
-        color:"white"
+        color: "white"
     }
 })
+
+
+
+async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('myNotificationChannel', {
+            name: 'A channel is needed for the permissions prompt to appear',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+        // Learn more about projectId:
+        // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+        // EAS projectId is used here.
+        try {
+            const projectId =
+                Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+            if (!projectId) {
+                throw new Error('Project ID not found');
+            }
+            token = (
+                await Notifications.getExpoPushTokenAsync({
+                    projectId,
+                })
+            ).data;
+        } catch (e) {
+            token = `${e}`;
+        }
+    } else {
+        alert('Must use physical device for Push Notifications');
+    }
+
+    return token;
+}

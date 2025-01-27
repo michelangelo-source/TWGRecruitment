@@ -37,7 +37,7 @@ export default function Login() {
                     </Link>
                 </View>
 
-                <View style={{paddingHorizontal: 60, width: '100%'}}>
+                <View style={{paddingHorizontal: 50, width: '100%'}}>
                     <Text style={styles.policyText}>By continuing you agree with
                         {"\n"}
                         <Text style={styles.link} onPress={() => {
