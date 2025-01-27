@@ -1,8 +1,14 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {Dimensions, StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native'
 import {router} from "expo-router";
 import {Image} from "expo-image";
+import DatePicker from "react-native-date-picker";
+import {useState} from "react";
+import {handleTime} from "@/components/functions/handleTime";
 
 export default function settings() {
+    const [date, setDate] = useState(new Date())
+    const [isEnabled, setIsEnabled] = useState(true)
+    const [changeHourMode, setChangeHourMode] = useState(false)
     return (<View style={styles.container}>
         <View style={styles.topView}>
             <TouchableOpacity onPress={() => {
@@ -13,7 +19,6 @@ export default function settings() {
                     source={require('@/assets/images/leftarrow-icon.svg')}
                     placeholder={"blur hash"}
                     contentFit={'contain'}
-
                 />
             </TouchableOpacity>
             <Text style={styles.titleText}>Settings</Text>
@@ -30,7 +35,8 @@ export default function settings() {
             </View>
             <Text style={styles.accountName}>John Doe</Text>
         </View>
-        <View style={styles.notificationTitleView}>   <Image
+        <View style={styles.notificationTitleView}>
+            <Image
             style={styles.notificationIcon}
             source={require('@/assets/images/notification-icon.svg')}
             placeholder={"blur hash"}
@@ -38,8 +44,41 @@ export default function settings() {
         />
             <Text style={styles.notificationTitle}>Learning reminders</Text>
         </View>
-        <View></View>
-        <View></View>
+        <View style={styles.notificationSetupView}>
+              <Text>Repeat everyday at:</Text>
+
+          <TouchableOpacity onPress={()=>{
+              setChangeHourMode(true)
+          }} style={{flexDirection:"row"}}>
+              <Image
+                  style={styles.clockIcon}
+                  source={require('@/assets/images/clock-icon.svg')}
+                  placeholder={"clock"}
+                  contentFit={'contain'}
+              />
+            <Text> {handleTime(date)}</Text>
+          </TouchableOpacity>
+            <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={()=>setIsEnabled(!isEnabled)}
+                value={isEnabled}
+            />
+        </View>
+        <View>
+            <Text style={styles.bottomText}>You will receive friendly reminder to remember to study</Text>
+        </View>
+
+
+
+        {changeHourMode&&
+            <View style={styles.changeHourView}>
+                <DatePicker mode={"time"} date={date} onDateChange={(data)=>setDate(data)}/>
+                <TouchableOpacity onPress={()=>{
+                    setChangeHourMode(false)
+                }}><Text style={styles.confirmText}>Confirm</Text></TouchableOpacity>
+            </View>}
     </View>)
 }
 const styles = StyleSheet.create({
@@ -101,5 +140,32 @@ const styles = StyleSheet.create({
         fontFamily: "Poppins",
         fontSize: 14,
         color: "#2B2D42"
+    },notificationSetupView:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+        paddingHorizontal:30,
+    },clockIcon:{
+        width:24,
+        height:24,
+    },
+    bottomText:{
+        fontFamily:"Poppins-Bold",
+        fontSize: 10,
+        marginTop:10,
+        paddingHorizontal:30
+    },changeHourView:{
+        position:"absolute",
+        top:Dimensions.get("screen").height/2-250,
+        left:Dimensions.get("screen").width/2-125,
+        height:300,
+        width:250,
+        backgroundColor:"#8D99AE",
+        alignItems:"center",
+        justifyContent:"space-evenly",
+        borderRadius:16
+    },confirmText:{
+        fontFamily:"Poppins",
+        fontSize: 16,
+        color:"white"
     }
 })

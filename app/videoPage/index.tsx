@@ -1,27 +1,36 @@
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {useLocalSearchParams} from "expo-router";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {loadingStateType} from "@/components/mianPageComponent/api/filmsByName";
 import {getFilmInfoById, videoInfoType} from "@/app/videoPage/api/filmInfo";
 import {Image} from "expo-image";
-import VideoPlayerComponent from "@/components/videoPlayer/videoPlayer";
+import VideoPlayerComponent from "@/components/videoPageComponents/videoPlayer/videoPlayer";
+import Notes from "@/components/videoPageComponents/notes/Notes";
+import {VideoRef} from "react-native-video";
 
 
 export default function VideoPage() {
+
     const [activeMode, setActiveMode] = useState<"Details" | "Notes">("Details");
     const [loadingState, setLoadingState] = useState<loadingStateType>("Loading...");
     const [videoData, setVideosData] = useState<videoInfoType>();
     const {videoId} = useLocalSearchParams();
+    const videoRef = useRef<VideoRef>(null);
     useEffect(() => {
         getFilmInfoById(videoId as string, setLoadingState).then(response => {
             setVideosData(response);
         })
     }, []);
+
+
+
+
+
     return (
         <View style={styles.container}>
             {loadingState === "Loaded" && videoData ?
                 <>
-                    <VideoPlayerComponent></VideoPlayerComponent>
+                    <VideoPlayerComponent videoRef={videoRef} ></VideoPlayerComponent>
                     <View style={styles.movieTitleView}>
                         <Text style={styles.movieTitle}>{videoData.items[0].snippet.title}</Text>
                     </View>
@@ -89,7 +98,7 @@ export default function VideoPage() {
                             </View>
                         </View>
                         :
-                        <Text>NOTES IN PROGRESS</Text>}
+                        <Notes videoRef={videoRef} notesId={videoId as string}></Notes>}
                 </>
                 : <Text>{loadingState}</Text>}
         </View>

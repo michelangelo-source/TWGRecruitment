@@ -1,19 +1,22 @@
 import {Dimensions, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
 import Video, {VideoRef} from "react-native-video";
-import {useRef, useState} from "react";
-import {videoPlayerStyles} from "@/components/videoPlayer/styles";
+import {RefObject, useState} from "react";
 import {Image} from "expo-image";
 import {router} from "expo-router";
+import {videoPlayerStyles} from "@/components/videoPageComponents/videoPlayer/styles";
 
-export default function VideoPlayerComponent() {
+interface  videoPlayerProp {
+    videoRef:RefObject<VideoRef>;
+}
+export default function VideoPlayerComponent(props: videoPlayerProp) {
     const [isVideoMenuVisible, setIsVideoMenuVisible] = useState<boolean>(false)
     const [currentTime, setCurrentTime] = useState<number>(0)
     const [duration, setDuration] = useState<number>(0)
     const [progressBar, setProgressBar] = useState<number>(0)
     const [isMute, setIsMute] = useState<number>(1)
     const [pause, setPause] = useState<boolean>(false)
-    const videoRef = useRef<VideoRef>(null);
-    const background = require('../../assets/vidoes/broadchurch.mp4');
+
+    const background = require('@/assets/vidoes/broadchurch.mp4');
     const handleSeconds = (sec: number) => {
         if (sec < 10) {
             return ("0" + sec.toFixed())
@@ -25,11 +28,11 @@ export default function VideoPlayerComponent() {
         setDuration(duration)
     }
     const timeLine = (pixels: number) => {
-        if (!videoRef.current) {
+        if (!props.videoRef.current) {
             return;
         }
         const windowWidth = Dimensions.get('window').width;
-        videoRef.current.seek(duration * (pixels / windowWidth));
+        props.videoRef.current.seek(duration * (pixels / windowWidth));
     }
     const animateBar = (currentTime: number) => {
         setCurrentTime(currentTime)
@@ -123,7 +126,7 @@ export default function VideoPlayerComponent() {
                     <View style={videoPlayerStyles.bottomPartMenu}>
                         <Text style={videoPlayerStyles.timerText}>{(currentTime / 60).toFixed()}:{handleSeconds((currentTime % 60))} / {(duration / 60).toFixed()}:{(duration % 60).toFixed()}</Text>
                         <TouchableOpacity onPress={()=>{
-                            videoRef.current ? videoRef.current.presentFullscreenPlayer():null
+                            props.videoRef.current ? props.videoRef.current.presentFullscreenPlayer():null
                         }} >
                             <Image
                                 style={videoPlayerStyles.fullScreenIcon}
@@ -139,7 +142,7 @@ export default function VideoPlayerComponent() {
             <View style={videoPlayerStyles.backgroundVideo}>
                 <Video
                     source={background}
-                    ref={videoRef}
+                    ref={props.videoRef}
                     style={videoPlayerStyles.backgroundVideo}
                     resizeMode={"contain"}
                     onLoad={(data) => {
