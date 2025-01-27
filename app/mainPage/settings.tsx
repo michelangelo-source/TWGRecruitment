@@ -149,7 +149,7 @@ export default function settings() {
                     placeholder={"clock"}
                     contentFit={'contain'}
                 />
-                <Text> {alarmHour}:{alarmMinutes}</Text>
+                <Text> {alarmHour<10?"0"+alarmHour:alarmHour}:{alarmMinutes<10?"0"+alarmMinutes:alarmMinutes}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={isEnabled ? settingStyles.switchOnBack : settingStyles.switchOfBack}
                               onPress={async () => {
