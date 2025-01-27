@@ -1,3 +1,14 @@
+## This app is made for beginner programmers. It helps them gather knowledge from YouTube videos all in one place. ##
+
+
+used packages:
+- "react-native-video": Lets you play videos.
+- "@react-native-async-storage/async-storage": Saves your notes.
+- "expo-image": Lets you use .svg images.
+- "react-native-date-picker": Helps you pick time for reminders.
+- "expo-notifications": Sends you notifications.
+
+
 ![notification](./readMeFiles/PushNotification.jpg)
 
 ## Instalation
