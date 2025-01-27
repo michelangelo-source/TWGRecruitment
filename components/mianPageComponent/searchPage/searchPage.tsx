@@ -47,6 +47,9 @@ export default function SearchPage(props: SearchPageProps): JSX.Element {
         try {
             setLoadingState("Loading...");
             getMoreFilmsByNameWithFilters(props.searchText, setLoadingState, filterText).then((response) => {
+                if(!response.items){
+                    setLoadingState("Failed");
+                }
                 if (filterText === "relevance") {
                     response.items.sort((a, b) => {
                         return new Date(a.snippet.publishedAt).getTime() - new Date(b.snippet.publishedAt).getTime();
@@ -166,9 +169,11 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         fontSize: 12,
         lineHeight: 24,
+        color: "#2B2D42",
     },
     sortedByTextBold: {
         fontFamily: "Poppins-Bold",
+        color: "#2B2D42",
     },
 
     resultsText: {
@@ -177,6 +182,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         lineHeight: 24,
         paddingHorizontal: 20,
+        color: "#2B2D42",
     },
     element: {
         marginVertical: 10,
@@ -198,6 +204,7 @@ const styles = StyleSheet.create({
         fontFamily: "Poppins-Bold",
         fontSize: 12,
         lineHeight: 12,
+        color: "#2B2D42",
     },
     movieTitle: {
         paddingVertical: 5,
@@ -205,7 +212,8 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         fontSize: 12,
         lineHeight: 12,
-        marginBottom: 10
+        marginBottom: 10,
+        color: "#2B2D42",
     },
     movieDateView: {
         justifyContent: "flex-end",
@@ -216,5 +224,6 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         fontSize: 10,
         lineHeight: 14,
+        color: "#2B2D42",
     }
 })

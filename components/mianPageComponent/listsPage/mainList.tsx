@@ -20,6 +20,9 @@ export default function MainList(props: mainListProps) {
     useEffect(() => {
         try {
             getFilmsByName(props.title, setLoadingState).then((response) => {
+                if(!response.items){
+                    setLoadingState("Failed");
+                }
                 setFilms(response);
             })
         } catch (e) {
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
         width: "100%",
         borderStyle: "solid",
         borderBottomWidth: 1,
-        borderBottomColor: "black"
+        borderBottomColor: "#2B2D42"
     },
     titleBar: {
         display: "flex",
@@ -94,6 +97,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontSize: 18,
         lineHeight: 24,
+        color: "#2B2D42",
     },
     showMoreView: {
         display: "flex",
@@ -102,6 +106,7 @@ const styles = StyleSheet.create({
     },
     showMoreText: {
         fontFamily: "Poppins",
+        color: "#2B2D42",
         fontWeight: "400",
         fontSize: 12,
         lineHeight: 24,
@@ -124,6 +129,7 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         fontSize: 12,
         lineHeight: 12,
+        color: "#2B2D42",
     },
     movieDateView: {
         justifyContent: "flex-end",
@@ -134,5 +140,6 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         fontSize: 10,
         lineHeight: 14,
+        color: "#2B2D42",
     }
 })
