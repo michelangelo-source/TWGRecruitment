@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     },
     descriptionView: {
         marginVertical: 10,
-        height: 200,
+        height: 170,
     },
 
     descriptionText: {

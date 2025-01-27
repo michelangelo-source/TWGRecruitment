@@ -159,11 +159,14 @@ export default function VideoPlayerComponent(props: videoPlayerProp) {
                     timeLine(pageX)
                 }}>
                     <View style={{
+                        position:"absolute",
+                        top:274,
+                        zIndex:2,
                         width: "100%",
                         height: 12,
                         flexDirection: "row",
                         alignItems: "center",
-                        backgroundColor: "black"
+
                     }}>
                         <View
                             style={{width: progressBar, height: 4, backgroundColor: "#C71F1F"}}></View>

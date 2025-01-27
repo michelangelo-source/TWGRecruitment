@@ -4,7 +4,7 @@ export const videoPlayerStyles = StyleSheet.create({
     menuVideo: {
         position: "absolute",
         top: 0,
-        height: 284,
+        height: 280,
         width: "100%",
         backgroundColor: "rgba(255,255,255,0.3)",
         zIndex: 1,
