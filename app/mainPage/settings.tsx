@@ -67,6 +67,18 @@ export default function settings() {
         if(scheduledNotifications.length > 0) {
             setIsEnabled(true)
         }
+        if(scheduledNotifications[0].trigger){
+            // @ts-ignore
+            if (scheduledNotifications[0].trigger.hour!==alarmHour){
+                // @ts-ignore
+                setAlarmHour(scheduledNotifications[0].trigger.hour)
+            }
+            // @ts-ignore
+            if (scheduledNotifications[0].trigger.minute!==alarmMinutes){
+                // @ts-ignore
+                setAlarmMinutes(scheduledNotifications[0].trigger.minute)
+            }
+        }
     }
 
      const scheduleNotification =async()=> {
